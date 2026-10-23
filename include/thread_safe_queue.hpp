@@ -24,9 +24,21 @@ public:
     ThreadSafeQueue(const ThreadSafeQueue&) = delete;
     ThreadSafeQueue& operator=(const ThreadSafeQueue&) = delete;
 
-    // Enable moving
-    ThreadSafeQueue(ThreadSafeQueue&&) noexcept = default;
-    ThreadSafeQueue& operator=(ThreadSafeQueue&&) noexcept = default;
+    // Enable moving. std::mutex and std::condition_variable are not
+    // themselves movable, so the move operations lock the source queue
+    // and transfer only its contents; each instance keeps its own mutex.
+    ThreadSafeQueue(ThreadSafeQueue&& other) noexcept {
+        std::lock_guard<std::mutex> lock(other.mutex_);
+        queue_ = std::move(other.queue_);
+    }
+
+    ThreadSafeQueue& operator=(ThreadSafeQueue&& other) noexcept {
+        if (this != &other) {
+            std::scoped_lock lock(mutex_, other.mutex_);
+            queue_ = std::move(other.queue_);
+        }
+        return *this;
+    }
 
     /**
      * @brief Pushes an item into the queue.

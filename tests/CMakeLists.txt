@@ -1,0 +1,16 @@
+include(FetchContent)
+
+FetchContent_Declare(
+  Catch2
+  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+  GIT_TAG        v3.5.4
+)
+FetchContent_MakeAvailable(Catch2)
+
+add_executable(unit_tests test_thread_safe_queue.cpp)
+target_link_libraries(unit_tests PRIVATE thread_safe_queue Catch2::Catch2WithMain)
+
+list(APPEND CMAKE_MODULE_PATH "${catch2_SOURCE_DIR}/extras")
+include(CTest)
+include(Catch)
+catch_discover_tests(unit_tests)

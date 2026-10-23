@@ -19,6 +19,18 @@ cmake --build build
 ./build/demo
 ```
 
+## Running Tests
+
+Unit tests use [Catch2](https://github.com/catchorg/Catch2) (fetched automatically via CMake `FetchContent` — no manual install needed):
+
+```bash
+cmake -B build
+cmake --build build
+ctest --test-dir build --output-on-failure
+```
+
+To build without tests: `cmake -B build -DBUILD_TESTING=OFF`.
+
 ## Project Structure
 
 ```
@@ -27,7 +39,10 @@ thread-safe-queue/
 │   └── thread_safe_queue.hpp   # Header-only library
 ├── src/
 │   └── main.cpp                # Producer/consumer demo
-├── .github/workflows/ci.yml    # CI: builds on every push
+├── tests/
+│   ├── CMakeLists.txt          # Fetches Catch2, registers tests
+│   └── test_thread_safe_queue.cpp
+├── .github/workflows/ci.yml    # CI: builds, runs demo, runs ctest
 ├── CMakeLists.txt
 └── README.md
 ```

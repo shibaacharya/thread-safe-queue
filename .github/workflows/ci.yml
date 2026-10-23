@@ -21,3 +21,6 @@ jobs:
 
       - name: Run demo
         run: ./build/demo
+
+      - name: Run unit tests
+        run: ctest --test-dir build --output-on-failure
